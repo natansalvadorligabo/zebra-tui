@@ -7,7 +7,7 @@ import (
 	"os"
 	"path/filepath"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 	"github.com/salvadorligabo/zebra-tui/internal/git"
 	"github.com/salvadorligabo/zebra-tui/internal/ui"
 )
@@ -45,6 +45,6 @@ func run(repoFlag string) error {
 	}
 
 	model := ui.NewWithFiles(repo, scope, files)
-	_, err = tea.NewProgram(model, tea.WithAltScreen()).Run()
+	_, err = tea.NewProgram(model).Run()
 	return err
 }

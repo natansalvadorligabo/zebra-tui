@@ -1,7 +1,7 @@
 package ui
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 	"github.com/salvadorligabo/zebra-tui/internal/diff"
 	"github.com/salvadorligabo/zebra-tui/internal/git"
 )

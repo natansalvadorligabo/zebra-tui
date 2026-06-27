@@ -3,7 +3,7 @@ package ui
 import (
 	"strings"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 	"github.com/salvadorligabo/zebra-tui/internal/diff"
 	"github.com/salvadorligabo/zebra-tui/internal/git"
 )
@@ -120,26 +120,28 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.selected = 0
 		}
 		return m, nil
-	case tea.KeyMsg:
+	case tea.KeyPressMsg:
 		return m.handleKey(msg)
 	}
 	return m, nil
 }
 
-func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
+func (m Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
+	key := msg.String()
+
 	// Ctrl+C always quits, even while typing in an input.
-	if msg.Type == tea.KeyCtrlC {
+	if key == "ctrl+c" {
 		return m, tea.Quit
 	}
 	// Input modes capture text before normal keybindings apply.
 	if m.filterActive {
-		return m.handleFilterKey(msg), nil
+		return m.handleFilterKey(key, msg.Text), nil
 	}
 	if m.searchActive {
-		return m.handleSearchKey(msg), nil
+		return m.handleSearchKey(key, msg.Text), nil
 	}
 
-	if msg.Type == tea.KeyCtrlF {
+	if key == "ctrl+f" {
 		if m.focus == focusSidebar {
 			m.filterActive = true
 		} else {
@@ -149,106 +151,96 @@ func (m Model) handleKey(msg tea.KeyMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	}
 
-	// Global quit.
-	if msg.Type == tea.KeyRunes && string(msg.Runes) == "q" {
+	switch key {
+	case "q":
 		return m, tea.Quit
-	}
-
-	switch msg.Type {
-	case tea.KeyTab:
+	case "tab":
 		m.cycleFocus(true)
 		return m, nil
-	case tea.KeyShiftTab:
+	case "shift+tab":
 		m.cycleFocus(false)
 		return m, nil
-	case tea.KeyLeft:
+	case "left":
 		m.focus = focusSidebar
 		return m, nil
-	case tea.KeyRight:
+	case "right":
 		m.focus = focusDiff
 		return m, nil
-	case tea.KeyUp:
+	case "up", "k":
 		return m.moveUp(), nil
-	case tea.KeyDown:
+	case "down", "j":
 		return m.moveDown(), nil
-	case tea.KeySpace:
+	case "space":
 		return m.activateFocused()
-	case tea.KeyEnter:
+	case "enter":
 		if m.focus == focusSidebar {
 			m.opened = m.selected
 			return m, nil
 		}
 		return m.activateFocused()
-	case tea.KeyRunes:
-		switch string(msg.Runes) {
-		case "k":
-			return m.moveUp(), nil
-		case "j":
-			return m.moveDown(), nil
-		case "n":
-			m.diffScroll = m.nextHunkRow()
-			return m, nil
-		case "p":
-			m.diffScroll = m.prevHunkRow()
-			return m, nil
-		case "v":
-			m.view = toggleView(m.view)
-			return m, nil
-		case "w":
-			m.showWhitespace = !m.showWhitespace
-			return m, nil
-		}
+	case "n":
+		m.diffScroll = m.nextHunkRow()
+		return m, nil
+	case "p":
+		m.diffScroll = m.prevHunkRow()
+		return m, nil
+	case "v":
+		m.view = toggleView(m.view)
+		return m, nil
+	case "w":
+		m.showWhitespace = !m.showWhitespace
+		return m, nil
 	}
 	return m, nil
 }
 
-// handleFilterKey routes keys while the sidebar filter input is active.
-func (m Model) handleFilterKey(msg tea.KeyMsg) Model {
-	switch msg.Type {
-	case tea.KeyEsc:
+// handleFilterKey routes keys while the sidebar filter input is active. key is
+// the keystroke string; text is the printable characters (empty for non-text
+// keys), used to build the query.
+func (m Model) handleFilterKey(key, text string) Model {
+	switch key {
+	case "esc":
 		m.filterActive = false
 		m.filter = ""
 		m.selected = 0
-	case tea.KeyEnter:
+	case "enter":
 		m.filterActive = false // accept filter, keep it applied
-	case tea.KeyBackspace:
+	case "backspace":
 		if r := []rune(m.filter); len(r) > 0 {
 			m.filter = string(r[:len(r)-1])
 		}
 		m.selected = 0
-	case tea.KeySpace:
-		m.filter += " "
-		m.selected = 0
-	case tea.KeyRunes:
-		m.filter += string(msg.Runes)
-		m.selected = 0
+	default:
+		if text != "" {
+			m.filter += text
+			m.selected = 0
+		}
 	}
 	return m
 }
 
 // handleSearchKey routes keys while the diff search input is active.
-func (m Model) handleSearchKey(msg tea.KeyMsg) Model {
-	switch msg.Type {
-	case tea.KeyEsc:
+func (m Model) handleSearchKey(key, text string) Model {
+	switch key {
+	case "esc":
 		m.searchActive = false
 		m.search = ""
 		m.matches = nil
 		m.matchIdx = 0
-	case tea.KeyBackspace:
+	case "backspace":
 		if r := []rune(m.search); len(r) > 0 {
 			m.search = string(r[:len(r)-1])
 		}
 		m.recomputeMatches()
-	case tea.KeyUp:
+	case "up":
 		m.gotoMatch(-1)
-	case tea.KeyDown, tea.KeyEnter:
+	case "down", "enter":
 		m.gotoMatch(1)
-	case tea.KeySpace:
-		m.search += " "
-		m.recomputeMatches()
-	case tea.KeyRunes:
-		m.search += string(msg.Runes)
-		m.recomputeMatches()
+	default:
+		if text != "" {
+			m.search += text
+			m.recomputeMatches()
+		}
 	}
 	return m
 }

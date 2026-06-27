@@ -3,14 +3,20 @@ package ui
 import (
 	"strings"
 
-	"github.com/charmbracelet/lipgloss"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	"github.com/salvadorligabo/zebra-tui/internal/diff"
 )
 
 const sidebarWidth = 30
 
-// View implements tea.Model.
-func (m Model) View() string {
+// View implements tea.Model. The diff UI runs in the alternate screen buffer.
+func (m Model) View() tea.View {
+	return tea.View{Content: m.content(), AltScreen: true}
+}
+
+// content renders the full-screen UI as a string.
+func (m Model) content() string {
 	if m.loadErr != nil {
 		return styleMessage.Render("error: " + m.loadErr.Error())
 	}

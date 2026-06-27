@@ -1,7 +1,7 @@
 # zebra
 
 A fast, keyboard-driven terminal UI for reviewing local git diffs, built with
-[Bubble Tea](https://github.com/charmbracelet/bubbletea).
+[Bubble Tea v2](https://github.com/charmbracelet/bubbletea).
 
 `zebra` replaces `git diff` with a navigable interface: a sidebar of changed
 files with status indicators and change counts, and a diff panel with line

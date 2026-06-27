@@ -1,21 +1,17 @@
 package ui
 
 import (
-	"os"
 	"strings"
 	"testing"
 
-	"github.com/charmbracelet/lipgloss"
-	"github.com/muesli/termenv"
+	"github.com/charmbracelet/x/ansi"
 	"github.com/salvadorligabo/zebra-tui/internal/diff"
 )
 
-func TestMain(m *testing.M) {
-	// Force a no-color profile so render output is plain text and assertions
-	// are stable across environments.
-	lipgloss.SetColorProfile(termenv.Ascii)
-	os.Exit(m.Run())
-}
+// plain strips ANSI styling so assertions on rendered text are stable. Lip
+// Gloss v2 always embeds color escapes at render time (the profile downgrade
+// happens at the terminal writer), so tests strip them here.
+func plain(s string) string { return ansi.Strip(s) }
 
 func sampleFile() diff.File {
 	return diff.File{
@@ -66,15 +62,6 @@ func containsLine(lines []string, pred func(string) bool) bool {
 	return false
 }
 
-// withColor temporarily enables a color profile so style application is
-// observable as ANSI escapes, then restores the no-color default.
-func withColor(t *testing.T, fn func()) {
-	t.Helper()
-	lipgloss.SetColorProfile(termenv.TrueColor)
-	defer lipgloss.SetColorProfile(termenv.Ascii)
-	fn()
-}
-
 func TestRenderInline_VisualizeWhitespace(t *testing.T) {
 	f := diff.File{Path: "ws.go", Hunks: []diff.Hunk{{
 		Header: "@@ -1,1 +1,1 @@",
@@ -100,13 +87,11 @@ func TestRenderInline_VisualizeWhitespace(t *testing.T) {
 func TestRenderInline_WhitespaceOnlyHighlighted(t *testing.T) {
 	wsLine := diff.Line{Type: diff.LineAdded, Content: "  x", NewNumber: 1, WhitespaceOnly: true}
 	normalLine := diff.Line{Type: diff.LineAdded, Content: "  x", NewNumber: 1}
-	withColor(t, func() {
-		wsOut := renderInlineLine(wsLine, RenderOpts{Width: 80})
-		normalOut := renderInlineLine(normalLine, RenderOpts{Width: 80})
-		if wsOut == normalOut {
-			t.Errorf("whitespace-only line should be styled differently from a normal added line")
-		}
-	})
+	wsOut := renderInlineLine(wsLine, RenderOpts{Width: 80})
+	normalOut := renderInlineLine(normalLine, RenderOpts{Width: 80})
+	if wsOut == normalOut {
+		t.Errorf("whitespace-only line should be styled differently from a normal added line")
+	}
 }
 
 func TestRenderInline_BinaryMessageWithSizes(t *testing.T) {
@@ -154,8 +139,8 @@ func TestRenderSideBySide_AddedFileEmptyLeft(t *testing.T) {
 		if !ok {
 			continue
 		}
-		if strings.ContainsAny(l, "abcdefghijklmnopqrstuvwxyz") {
-			t.Errorf("added file should have empty left column, got left=%q", l)
+		if strings.ContainsAny(plain(l), "abcdefghijklmnopqrstuvwxyz") {
+			t.Errorf("added file should have empty left column, got left=%q", plain(l))
 		}
 		_ = r
 	}
@@ -178,8 +163,8 @@ func TestRenderSideBySide_DeletedFileEmptyRight(t *testing.T) {
 		if !ok {
 			continue
 		}
-		if strings.ContainsAny(r, "abcdefghijklmnopqrstuvwxyz") {
-			t.Errorf("deleted file should have empty right column, got right=%q", r)
+		if strings.ContainsAny(plain(r), "abcdefghijklmnopqrstuvwxyz") {
+			t.Errorf("deleted file should have empty right column, got right=%q", plain(r))
 		}
 	}
 }
@@ -189,17 +174,14 @@ func TestRenderInline_SearchHighlight(t *testing.T) {
 		Header: "@@ -1,1 +1,1 @@",
 		Lines:  []diff.Line{{Type: diff.LineContext, Content: "foo bar foo", OldNumber: 1, NewNumber: 1}},
 	}}}
-	withColor(t, func() {
-		hit := RenderInline(f, RenderOpts{Width: 80, Search: "foo"})
-		miss := RenderInline(f, RenderOpts{Width: 80})
-		if hit == miss {
-			t.Errorf("search matches should be visually highlighted")
-		}
-	})
+	hit := RenderInline(f, RenderOpts{Width: 80, Search: "foo"})
+	miss := RenderInline(f, RenderOpts{Width: 80})
+	if hit == miss {
+		t.Errorf("search matches should be visually highlighted")
+	}
 	// Content text is preserved regardless of highlighting.
-	out := RenderInline(f, RenderOpts{Width: 80, Search: "foo"})
-	if !strings.Contains(out, "foo bar foo") {
-		t.Errorf("search highlight altered content text:\n%q", out)
+	if !strings.Contains(plain(hit), "foo bar foo") {
+		t.Errorf("search highlight altered content text:\n%q", plain(hit))
 	}
 }
 
