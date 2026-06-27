@@ -1,0 +1,53 @@
+# GoReleaser configuration — SCAFFOLD.
+# https://goreleaser.com
+#
+# Drives the Release pipeline (.github/workflows/release.yml). Builds the `zebra`
+# binary for Linux, macOS, and Windows and attaches archives to the GitHub
+# Release. Validate locally with: goreleaser release --snapshot --clean
+version: 2
+
+project_name: zebra
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: zebra
+    main: .
+    binary: zebra
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{ .Version }}
+
+archives:
+  - id: zebra
+    formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}-{{ .Os }}-{{ .Arch }}
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+
+release:
+  draft: true # flip to false once the release flow is validated
+  prerelease: auto
