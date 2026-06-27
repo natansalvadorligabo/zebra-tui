@@ -71,6 +71,10 @@ to pass (green), and refactor. Work in vertical slices — one test → one
 implementation → repeat — never write all tests up front or implementation
 before its covering test exists.
 
+**After every bug fix or feature**, run the full suite via the `run-tests`
+skill (`.agents/skills/run-tests/SKILL.md`) before declaring the task done.
+The suite must be green — no regressions allowed.
+
 Each layer is tested in isolation against its purity boundary: `diff` tests feed
 raw diff strings and assert on the parsed model; `ui` tests drive the model and
 render functions without touching git. Keep new logic pure enough to test the
