@@ -64,6 +64,13 @@ event loop (scope changes reload asynchronously via `loadFilesCmd`).
 
 ## Testing
 
+**TDD is mandatory.** For every feature or bug fix, invoke the project `tdd`
+skill (`.agents/skills/tdd/SKILL.md`) and follow it: write one failing test
+first (red), confirm it fails for the right reason, then write the minimal code
+to pass (green), and refactor. Work in vertical slices — one test → one
+implementation → repeat — never write all tests up front or implementation
+before its covering test exists.
+
 Each layer is tested in isolation against its purity boundary: `diff` tests feed
 raw diff strings and assert on the parsed model; `ui` tests drive the model and
 render functions without touching git. Keep new logic pure enough to test the
