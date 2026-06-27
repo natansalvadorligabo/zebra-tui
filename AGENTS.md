@@ -16,6 +16,12 @@ go vet ./...                        # vet
 
 There is no Makefile or lint config; use the standard `go` toolchain. Go 1.26.
 
+## Git workflow
+
+**Never `git push`.** Only the maintainer pushes. Agents may stage, commit, and
+create branches locally, but pushing to any remote is off-limits — leave pushing
+to the human.
+
 ## Architecture
 
 Three layers, each in its own package, ordered by purity. Respect these

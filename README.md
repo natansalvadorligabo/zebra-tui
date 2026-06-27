@@ -1,7 +1,7 @@
 # zebra-tui
 
 <p align="center">
-  <img src="images/zebra-tui-banner.png" alt="zebra-tui — a keyboard-driven terminal UI for reviewing git diffs" width="100%">
+  <img src="images/zebra-tui-banner.png" alt="zebra-tui: a keyboard-driven terminal UI for reviewing git diffs" width="100%">
 </p>
 
 <p align="center">
@@ -15,34 +15,34 @@
 diffs**. It replaces the raw `git diff` output with a navigable interface: a
 sidebar of changed files with status indicators and `+/-` counts, and a diff
 panel with line numbers, inline or side-by-side layout, visible whitespace, and
-in-diff search — all without leaving the terminal. It shells out to the `git`
+in-diff search, all without leaving the terminal. It shells out to the `git`
 binary and opens instantly in the current repository.
 
 It scratches a personal itch: not wanting to depend on a heavyweight IDE just to
-read a diff, while the terminal alternative — a bare `git diff` — is ugly and
+read a diff, while the terminal alternative, a bare `git diff`, is ugly and
 incomplete (no line numbers, no side-by-side, no whitespace visibility, no
 way to jump between files). `zebra` makes reviewing changes a first-class
-terminal experience. For the full design — layers, data model, and rendering
-strategy — see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
+terminal experience. For the full design, covering layers, data model, and
+rendering strategy, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 ## Key features
 
-- **File sidebar** — every changed file with status (`M`/`A`/`D`/`R`), color-coded, and per-file `+N -N` counts.
-- **Inline & side-by-side** — toggle layouts on the same diff; side-by-side keeps independent old/new line numbers.
-- **Scopes** — switch between working tree, staged, and working tree + staged without restarting.
-- **Visible whitespace** — render spaces as `·` and tabs as `→`, and highlight whitespace-only changes.
-- **In-diff search** — `Ctrl+F` highlights all matches and steps through them.
-- **Sidebar filter** — the same `Ctrl+F`, when the sidebar is focused, filters the file list.
-- **Hunk navigation** — jump between hunks with `n` / `p` to skip unchanged context.
-- **Binary & empty states** — binary files show sizes (`24KB → 31KB`); a clean tree says so instead of crashing.
-- **Instant** — the first diff is loaded before the first frame is drawn.
+- **File sidebar**: every changed file with status (`M`/`A`/`D`/`R`), color-coded, and per-file `+N -N` counts.
+- **Inline & side-by-side**: toggle layouts on the same diff; side-by-side keeps independent old/new line numbers.
+- **Scopes**: switch between working tree, staged, and working tree + staged without restarting.
+- **Visible whitespace**: render spaces as `·` and tabs as `→`, and highlight whitespace-only changes.
+- **In-diff search**: `Ctrl+F` highlights all matches and steps through them.
+- **Sidebar filter**: the same `Ctrl+F`, when the sidebar is focused, filters the file list.
+- **Hunk navigation**: jump between hunks with `n` / `p` to skip unchanged context.
+- **Binary & empty states**: binary files show sizes (`24KB → 31KB`); a clean tree says so instead of crashing.
+- **Instant**: the first diff is loaded before the first frame is drawn.
 
 ## Use cases
 
-- **Pre-commit self-review** — read exactly what you're about to commit, staged vs. unstaged, before you push.
-- **Terminal-only workflows** — review changes over SSH or in a tmux pane without opening an IDE or a browser.
-- **Spotting formatting noise** — surface whitespace-only changes that hide real edits in a normal diff.
-- **Large changesets** — filter the file list and hop between hunks instead of scrolling a wall of `git diff`.
+- **Pre-commit self-review**: read exactly what you're about to commit, staged vs. unstaged, before you push.
+- **Terminal-only workflows**: review changes over SSH or in a tmux pane without opening an IDE or a browser.
+- **Spotting formatting noise**: surface whitespace-only changes that hide real edits in a normal diff.
+- **Large changesets**: filter the file list and hop between hunks instead of scrolling a wall of `git diff`.
 
 ## Quick start
 
@@ -97,7 +97,7 @@ go install github.com/salvadorligabo/zebra-tui@latest
 
 ### Install notes
 
-- **`git` is required** at runtime — `zebra` shells out to it; it doesn't bundle a git library.
+- **`git` is required** at runtime: `zebra` shells out to it; it doesn't bundle a git library.
 - `go install` needs Go on your machine; if you don't have it, use the pre-built binaries from Releases instead.
 - The pre-built binary and package-manager distribution (npm, Homebrew, Scoop) are wired through the release pipeline and land as it matures.
 - A true-color terminal gives the best result; `zebra` degrades gracefully on limited palettes.
@@ -138,25 +138,25 @@ press `Space`/`Enter` to cycle scopes.
 ## Architecture
 
 `zebra` is split into three pure, independently tested layers, ordered by
-purity — lower layers never depend on the ones above:
+purity, where lower layers never depend on the ones above:
 
-- **`internal/git`** — the only code that touches the filesystem or spawns processes; runs `git diff` variants and returns *raw* output.
-- **`internal/diff`** — a *pure* parser that turns raw unified-diff text into a `File → Hunk → Line` model. No I/O.
-- **`internal/ui`** — the Bubble Tea model and pure render functions; `LoadFiles` is the single seam to git.
+- **`internal/git`**: the only code that touches the filesystem or spawns processes; runs `git diff` variants and returns *raw* output.
+- **`internal/diff`**: a *pure* parser that turns raw unified-diff text into a `File → Hunk → Line` model. No I/O.
+- **`internal/ui`**: the Bubble Tea model and pure render functions; `LoadFiles` is the single seam to git.
 
-Full design — layer boundaries, the diff data model, focus/scroll handling, and
-the inline vs. side-by-side rendering strategy — lives in
+The full design, covering layer boundaries, the diff data model, focus/scroll
+handling, and the inline vs. side-by-side rendering strategy, lives in
 [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Product requirements are in
 [`docs/PRD.md`](docs/PRD.md).
 
 ## Influences and prior art
 
-- [akitaonrails/ghpending](https://github.com/akitaonrails/ghpending) — the inspiration for building this as a TUI.
-- [Bubble Tea](https://github.com/charmbracelet/bubbletea) & [Lip Gloss](https://github.com/charmbracelet/lipgloss) — the Charm libraries `zebra` is built on.
+- [akitaonrails/ghpending](https://github.com/akitaonrails/ghpending): the inspiration for building this as a TUI.
+- [Bubble Tea](https://github.com/charmbracelet/bubbletea) & [Lip Gloss](https://github.com/charmbracelet/lipgloss): the Charm libraries `zebra` is built on.
 
 ## License
 
-[MIT](LICENSE) © Natan Salvador Ligabô
+[MIT](LICENSE)
 
 ## Acknowledgements
 
