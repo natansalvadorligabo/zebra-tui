@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/salvadorligabo/zebra-tui/internal/diff"
-	"github.com/salvadorligabo/zebra-tui/internal/git"
+	"github.com/natansalvadorligabo/zebra-tui/internal/diff"
+	"github.com/natansalvadorligabo/zebra-tui/internal/git"
 )
 
 // key builds a v2 key-press message matching what real terminal input produces:

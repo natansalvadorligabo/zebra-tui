@@ -53,7 +53,7 @@ The shortest path to a running `zebra`.
 Requires [Go 1.26+](https://go.dev/dl/).
 
 ```sh
-go install github.com/salvadorligabo/zebra-tui@latest
+go install github.com/natansalvadorligabo/zebra-tui@latest
 ```
 
 This drops a `zebra` binary in `$(go env GOPATH)/bin`. Make sure that directory
@@ -70,7 +70,7 @@ go build -o zebra .
 ### Windows
 
 ```powershell
-go install github.com/salvadorligabo/zebra-tui@latest
+go install github.com/natansalvadorligabo/zebra-tui@latest
 # produces zebra.exe in %GOPATH%\bin (usually %USERPROFILE%\go\bin)
 ```
 
@@ -80,7 +80,7 @@ Pre-built `zebra-windows-amd64.exe` binaries will be attached to each
 ### Linux
 
 ```sh
-go install github.com/salvadorligabo/zebra-tui@latest
+go install github.com/natansalvadorligabo/zebra-tui@latest
 # or grab a pre-built binary from the Releases page:
 # curl -L -o zebra https://github.com/natansalvadorligabo/zebra-tui/releases/latest/download/zebra-linux-amd64
 # chmod +x zebra && sudo mv zebra /usr/local/bin/
@@ -89,7 +89,7 @@ go install github.com/salvadorligabo/zebra-tui@latest
 ### macOS
 
 ```sh
-go install github.com/salvadorligabo/zebra-tui@latest
+go install github.com/natansalvadorligabo/zebra-tui@latest
 # or grab a pre-built binary (replace arm64 with amd64 on Intel Macs):
 # curl -L -o zebra https://github.com/natansalvadorligabo/zebra-tui/releases/latest/download/zebra-darwin-arm64
 # chmod +x zebra && sudo mv zebra /usr/local/bin/

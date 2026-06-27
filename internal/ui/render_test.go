@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/charmbracelet/x/ansi"
-	"github.com/salvadorligabo/zebra-tui/internal/diff"
+	"github.com/natansalvadorligabo/zebra-tui/internal/diff"
 )
 
 // plain strips ANSI styling so assertions on rendered text are stable. Lip

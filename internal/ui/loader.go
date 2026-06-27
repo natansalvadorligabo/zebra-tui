@@ -2,8 +2,8 @@ package ui
 
 import (
 	tea "charm.land/bubbletea/v2"
-	"github.com/salvadorligabo/zebra-tui/internal/diff"
-	"github.com/salvadorligabo/zebra-tui/internal/git"
+	"github.com/natansalvadorligabo/zebra-tui/internal/diff"
+	"github.com/natansalvadorligabo/zebra-tui/internal/git"
 )
 
 // filesLoadedMsg carries the parsed diff for a scope back into the model.

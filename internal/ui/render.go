@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"charm.land/lipgloss/v2"
-	"github.com/salvadorligabo/zebra-tui/internal/diff"
+	"github.com/natansalvadorligabo/zebra-tui/internal/diff"
 )
 
 // lipglossWidth returns the rendered (visible) width of s, ignoring ANSI codes.

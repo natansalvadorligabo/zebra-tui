@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 
 	tea "charm.land/bubbletea/v2"
-	"github.com/salvadorligabo/zebra-tui/internal/git"
-	"github.com/salvadorligabo/zebra-tui/internal/ui"
+	"github.com/natansalvadorligabo/zebra-tui/internal/git"
+	"github.com/natansalvadorligabo/zebra-tui/internal/ui"
 )
 
 func main() {

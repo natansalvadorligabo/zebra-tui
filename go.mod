@@ -1,4 +1,4 @@
-module github.com/salvadorligabo/zebra-tui
+module github.com/natansalvadorligabo/zebra-tui
 
 go 1.26.4
 
