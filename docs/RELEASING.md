@@ -37,12 +37,12 @@ automatically from the tag during publish, so you don't edit it by hand.
    `zebra-<os>-<arch>` assets + `checksums.txt`. The release goes public
    automatically (`release.draft: false`); confirm it on the Releases page.
 
-3. **Publish to npm**: repo → _Actions → Deploy → Run workflow_, enter the tag
-   (`v0.0.1`). The **npm** job sets `npm/package.json` to `0.0.1` and runs
-   `npm publish`. Requires the GitHub Release assets to already exist (step 2),
-   because the package's postinstall downloads them.
+   Publishing the Release fires the **Deploy** workflow automatically, which
+   sets `npm/package.json` from the tag and runs `npm publish` — no manual step.
+   To re-publish without re-tagging, run Deploy by hand: _Actions → Deploy → Run
+   workflow_, entering the tag.
 
-4. **Verify**:
+3. **Verify**:
 
    ```sh
    npm install -g zebra-tui
