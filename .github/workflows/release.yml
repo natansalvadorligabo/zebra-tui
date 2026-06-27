@@ -1,6 +1,9 @@
-# Release: on a version tag (e.g. v0.0.1), run GoReleaser to cross-compile the
-# binaries and publish them to a GitHub Release. The release is created as a
-# draft (see .goreleaser.yaml) for review before it goes public.
+# Release: on a version tag (e.g. v0.1.0), run GoReleaser to publish a GitHub
+# Release with the cross-compiled binaries, then publish the npm wrapper package.
+# Both jobs run in this single workflow (triggered by the tag push), so npm
+# publishing happens automatically. It must live here, not in deploy.yml: GitHub
+# won't let a release published by GoReleaser's bot token trigger a separate
+# workflow.
 
 name: Release
 
@@ -35,3 +38,28 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  npm:
+    name: Publish to npm
+    needs: goreleaser # wait until the Release and its binaries exist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Set package version from tag
+        working-directory: npm
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          npm version "$version" --no-git-tag-version --allow-same-version
+
+      - name: Publish
+        working-directory: npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -25,28 +25,33 @@ automatically from the tag during publish, so you don't edit it by hand.
    git push origin main
    ```
 
-2. **Tag and push the tag** (this triggers the Release workflow):
+2. **Tag and push the tag** — this is the only action; it triggers the whole
+   pipeline:
 
    ```sh
-   git tag -a v0.0.1 -m "v0.0.1"
-   git push origin v0.0.1
+   git tag -a v0.1.0 -m "v0.1.0"
+   git push origin v0.1.0
    ```
 
-   The **Release** workflow (`.github/workflows/release.yml`) runs GoReleaser,
-   which cross-compiles the binaries and publishes a GitHub Release with
-   `zebra-<os>-<arch>` assets + `checksums.txt`. The release goes public
-   automatically (`release.draft: false`); confirm it on the Releases page.
+   The **Release** workflow (`.github/workflows/release.yml`) runs two jobs in
+   one run:
+   - `goreleaser` — cross-compiles the binaries and publishes a public GitHub
+     Release with `zebra-<os>-<arch>` assets + `checksums.txt`.
+   - `npm` (`needs: goreleaser`) — sets `npm/package.json` from the tag and runs
+     `npm publish`.
 
-   Publishing the Release fires the **Deploy** workflow automatically, which
-   sets `npm/package.json` from the tag and runs `npm publish` — no manual step.
-   To re-publish without re-tagging, run Deploy by hand: _Actions → Deploy → Run
-   workflow_, entering the tag.
+   Both happen automatically because they share one workflow run; npm publishing
+   can't live in a separate workflow keyed on the release event, since a Release
+   published by GoReleaser's bot token does not trigger other workflows.
+
+   To re-publish npm for an existing tag without re-tagging, run the **Deploy**
+   workflow by hand: _Actions → Deploy → Run workflow_, entering the tag.
 
 3. **Verify**:
 
    ```sh
    npm install -g zebra-tui
-   zebra --version            # -> zebra v0.0.1
+   zebra --version            # -> zebra v0.1.0
    ```
 
 ## Validating locally before tagging

@@ -80,10 +80,10 @@ the two must agree:
 ### 4. Hand off — do not push
 
 Present the maintainer the command sequence from `docs/RELEASING.md`: merge
-`dev`→`main`, then `git tag` + `git push` the tag. That triggers Release (which
-publishes the GitHub Release with binaries), which in turn fires Deploy to
-`npm publish` automatically — pushing the tag is the only action. Flag any
-one-time setup still missing (the `NPM_TOKEN` GitHub secret).
+`dev`→`main`, then `git tag` + `git push` the tag. That one push runs the
+Release workflow, whose `goreleaser` and `npm` jobs publish the GitHub Release
+and the npm package in a single run — pushing the tag is the only action. Flag
+any one-time setup still missing (the `NPM_TOKEN` GitHub secret).
 
 **Completion criterion:** the maintainer has the exact push/tag/publish commands
 and the list of any unmet prerequisites. The agent has pushed nothing.
