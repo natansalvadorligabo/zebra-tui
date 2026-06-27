@@ -48,6 +48,18 @@ rendering strategy, see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 The shortest path to a running `zebra`.
 
+### npm
+
+No Go toolchain required:
+
+```sh
+npm install -g zebra-tui
+```
+
+This downloads the prebuilt binary for your platform from the latest
+[GitHub Release](https://github.com/natansalvadorligabo/zebra-tui/releases) and
+installs a `zebra` command. Requires Node 18+ and `git` on your `PATH`.
+
 ### From source
 
 Requires [Go 1.26+](https://go.dev/dl/).
@@ -99,7 +111,7 @@ go install github.com/natansalvadorligabo/zebra-tui@latest
 
 - **`git` is required** at runtime: `zebra` shells out to it; it doesn't bundle a git library.
 - `go install` needs Go on your machine; if you don't have it, use the pre-built binaries from Releases instead.
-- The pre-built binary and package-manager distribution (npm, Homebrew, Scoop) are wired through the release pipeline and land as it matures.
+- npm (`npm install -g zebra-tui`) and pre-built binaries on the Releases page are available; Homebrew and Scoop are wired through the release pipeline and land as it matures.
 - A true-color terminal gives the best result; `zebra` degrades gracefully on limited palettes.
 
 ## Usage

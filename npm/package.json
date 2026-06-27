@@ -1,0 +1,47 @@
+{
+  "name": "zebra-tui",
+  "version": "0.0.1",
+  "description": "A fast, keyboard-driven terminal UI for reviewing your local git diffs.",
+  "bin": {
+    "zebra": "run.js"
+  },
+  "scripts": {
+    "postinstall": "node install.js"
+  },
+  "files": [
+    "run.js",
+    "install.js",
+    "README.md"
+  ],
+  "keywords": [
+    "git",
+    "diff",
+    "tui",
+    "terminal",
+    "cli",
+    "code-review",
+    "bubbletea"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/natansalvadorligabo/zebra-tui.git"
+  },
+  "homepage": "https://github.com/natansalvadorligabo/zebra-tui#readme",
+  "bugs": {
+    "url": "https://github.com/natansalvadorligabo/zebra-tui/issues"
+  },
+  "license": "MIT",
+  "author": "natansalvadorligabo",
+  "engines": {
+    "node": ">=18"
+  },
+  "os": [
+    "linux",
+    "darwin",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
+}

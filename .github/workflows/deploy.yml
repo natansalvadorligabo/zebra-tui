@@ -27,18 +27,27 @@ jobs:
   npm:
     name: Publish to npm
     runs-on: ubuntu-latest
-    if: false # TODO: enable once the npm wrapper package is built
     steps:
       - uses: actions/checkout@v4
+
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
+
+      - name: Set package version from tag
+        working-directory: npm
+        run: |
+          version="${{ inputs.tag }}"
+          version="${version#v}"
+          npm version "$version" --no-git-tag-version --allow-same-version
+
       - name: Publish
-        run: echo "TODO: build platform packages and 'npm publish'"
-        # env:
-        #   NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        working-directory: npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   homebrew:
     name: Update Homebrew tap
