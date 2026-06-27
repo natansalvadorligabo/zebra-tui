@@ -1,15 +1,6 @@
-# Deploy / distribution pipeline — SCAFFOLD (future work).
-#
-# Once a GitHub Release exists (see release.yml), this workflow will publish the
-# released binaries to downstream package managers so users can install without
-# Go:
-#
-#   - npm    — wrapper package `zebra-tui` with platform-specific optional deps
-#   - Homebrew — formula in a tap (macOS / Linux)
-#   - Scoop  — manifest in a bucket (Windows)
-#
-# Triggered manually for now; switch to `release: published` once the steps
-# below are implemented and tested.
+# Deploy: publish the released binaries to npm so users can install without Go.
+# Run manually after the GitHub Release for the tag exists (see release.yml);
+# the npm package's postinstall downloads the binaries from that Release.
 
 name: Deploy
 
@@ -48,17 +39,3 @@ jobs:
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-  homebrew:
-    name: Update Homebrew tap
-    runs-on: ubuntu-latest
-    if: false # TODO: enable once the tap repository exists
-    steps:
-      - run: 'echo "TODO: bump formula in the Homebrew tap"'
-
-  scoop:
-    name: Update Scoop bucket
-    runs-on: ubuntu-latest
-    if: false # TODO: enable once the Scoop bucket exists
-    steps:
-      - run: 'echo "TODO: bump manifest in the Scoop bucket"'

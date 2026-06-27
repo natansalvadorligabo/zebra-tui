@@ -33,19 +33,16 @@ automatically from the tag during publish, so you don't edit it by hand.
    ```
 
    The **Release** workflow (`.github/workflows/release.yml`) runs GoReleaser,
-   which cross-compiles the binaries and creates a **draft** GitHub Release with
-   `zebra-<os>-<arch>` assets + `checksums.txt`.
+   which cross-compiles the binaries and publishes a GitHub Release with
+   `zebra-<os>-<arch>` assets + `checksums.txt`. The release goes public
+   automatically (`release.draft: false`); confirm it on the Releases page.
 
-3. **Review and publish the draft Release** on the GitHub Releases page. (The
-   draft is a safety net for the first releases; once you trust the flow, set
-   `release.draft: false` in `.goreleaser.yaml` to publish automatically.)
-
-4. **Publish to npm**: repo → _Actions → Deploy → Run workflow_, enter the tag
+3. **Publish to npm**: repo → _Actions → Deploy → Run workflow_, enter the tag
    (`v0.0.1`). The **npm** job sets `npm/package.json` to `0.0.1` and runs
-   `npm publish`. Requires the GitHub Release assets to already exist (step 3),
+   `npm publish`. Requires the GitHub Release assets to already exist (step 2),
    because the package's postinstall downloads them.
 
-5. **Verify**:
+4. **Verify**:
 
    ```sh
    npm install -g zebra-tui
@@ -66,4 +63,5 @@ ls dist/                     # inspect the produced binary names
 - Asset names in `.goreleaser.yaml` (`zebra-<os>-<arch>[.exe]`) must stay in
   sync with the platform map in `npm/install.js`; the postinstall builds the
   download URL from them.
-- Homebrew and Scoop jobs in `deploy.yml` are stubs (`if: false`) for later.
+- Homebrew and Scoop are not wired yet; add jobs to `deploy.yml` once a tap /
+  bucket exists.

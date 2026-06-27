@@ -1,8 +1,6 @@
-# Release pipeline — SCAFFOLD.
-#
-# Builds cross-platform binaries and publishes a GitHub Release when a version
-# tag (e.g. v0.0.1) is pushed. Wired but not yet exercised: the first tag is
-# intentionally held back until the release flow is validated end to end.
+# Release: on a version tag (e.g. v0.0.1), run GoReleaser to cross-compile the
+# binaries and publish them to a GitHub Release. The release is created as a
+# draft (see .goreleaser.yaml) for review before it goes public.
 
 name: Release
 
