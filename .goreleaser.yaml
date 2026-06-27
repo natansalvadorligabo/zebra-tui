@@ -29,13 +29,13 @@ builds:
       - -s -w -X main.version={{ .Version }}
 
 archives:
+  # Publish raw, uncompressed binaries with predictable names
+  # (zebra-linux-amd64, zebra-windows-amd64.exe, ...). The npm wrapper's
+  # postinstall and the README curl examples download these directly, so the
+  # asset names must stay stable.
   - id: zebra
-    formats: [tar.gz]
-    name_template: >-
-      {{ .ProjectName }}-{{ .Os }}-{{ .Arch }}
-    format_overrides:
-      - goos: windows
-        formats: [zip]
+    formats: [binary]
+    name_template: "{{ .ProjectName }}-{{ .Os }}-{{ .Arch }}"
 
 checksum:
   name_template: "checksums.txt"
