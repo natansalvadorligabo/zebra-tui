@@ -1,0 +1,7 @@
+# binaries
+zebra
+zebra.exe
+*.exe
+
+# go
+/dist/
