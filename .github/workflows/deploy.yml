@@ -54,11 +54,11 @@ jobs:
     runs-on: ubuntu-latest
     if: false # TODO: enable once the tap repository exists
     steps:
-      - run: echo "TODO: bump formula in the Homebrew tap"
+      - run: 'echo "TODO: bump formula in the Homebrew tap"'
 
   scoop:
     name: Update Scoop bucket
     runs-on: ubuntu-latest
     if: false # TODO: enable once the Scoop bucket exists
     steps:
-      - run: echo "TODO: bump manifest in the Scoop bucket"
+      - run: 'echo "TODO: bump manifest in the Scoop bucket"'
