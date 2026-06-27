@@ -19,12 +19,29 @@ this skill is the agent's preflight, not a second copy of it.
 
 ## Steps
 
-### 1. Confirm the target version
+### 1. Detect current version and propose the bump
 
-Establish `vX.Y.Z` with the user (first release: `v0.0.1`). Releases are cut
-from `main`; work must already be merged or ready to merge from `dev`.
+Find the latest released version, then let the **conventional commits** since it
+choose the **semver** bump — never ask the user to pick the number blind.
 
-**Completion criterion:** an explicit `vX.Y.Z` string agreed with the user.
+```sh
+git describe --tags --abbrev=0           # latest tag; empty -> no release yet
+git log <latest-tag>..HEAD --oneline     # commits to classify (omit range if none)
+```
+
+Classify the range and apply the highest bump present:
+
+- `feat!:` / `fix!:` / a `BREAKING CHANGE:` footer -> **major** (`X`)
+- any `feat:` -> **minor** (`Y`)
+- only `fix:` (or `perf:`) -> **patch** (`Z`)
+- only `docs:`/`chore:`/`build:`/`test:` -> patch, and say the release is
+  optional since nothing user-facing changed.
+
+With no prior tag, the first release is `v0.0.1`. Releases are cut from `main`;
+work must already be merged or ready to merge from `dev`.
+
+**Completion criterion:** the current version is stated, the bump is justified by
+the commits, and the resulting `vX.Y.Z` is confirmed with the user.
 
 ### 2. Preflight the branch
 
