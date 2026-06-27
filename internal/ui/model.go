@@ -184,6 +184,10 @@ func (m Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case "p":
 		m.diffScroll = m.prevHunkRow()
 		return m, nil
+	case "s":
+		m.scope = cycleScope(m.scope)
+		m.diffScroll = 0
+		return m, loadFilesCmd(m.repo, m.scope)
 	case "v":
 		m.view = toggleView(m.view)
 		return m, nil

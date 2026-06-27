@@ -5,6 +5,7 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+	"github.com/charmbracelet/x/ansi"
 	"github.com/salvadorligabo/zebra-tui/internal/diff"
 )
 
@@ -25,7 +26,10 @@ func (m Model) content() string {
 	control := RenderControlBar(m.scope.String(), m.view.String(), m.showWhitespace, m.focus)
 
 	h := m.diffHeight()
-	sidebar := padLinesTo(RenderSidebar(m.files, m.selected, m.filter, m.focus == focusSidebar), h)
+	// The border consumes 2 columns; keep rows within the inner width so lipgloss
+	// never wraps a long path into extra rows (which would push the footer off-screen).
+	sidebarText := truncateLines(RenderSidebar(m.files, m.selected, m.filter, m.focus == focusSidebar), sidebarWidth-2)
+	sidebar := padLinesTo(sidebarText, h)
 	diff := padLinesTo(m.renderDiffPanel(), h)
 	sidebarBox := panelStyle(m.focus == focusSidebar).Width(sidebarWidth).Render(sidebar)
 	diffBox := panelStyle(m.focus == focusDiff).Width(m.diffWidth()).Render(diff)
@@ -108,6 +112,21 @@ func padLinesTo(s string, n int) string {
 	}
 	for len(lines) < n {
 		lines = append(lines, "")
+	}
+	return strings.Join(lines, "\n")
+}
+
+// truncateLines clips each line of s to at most w display cells, preserving ANSI
+// styling, so a bordered panel of inner width w never wraps a line into extra rows.
+func truncateLines(s string, w int) string {
+	if w < 1 {
+		w = 1
+	}
+	lines := strings.Split(s, "\n")
+	for i, line := range lines {
+		if ansi.StringWidth(line) > w {
+			lines[i] = ansi.Truncate(line, w, "…")
+		}
 	}
 	return strings.Join(lines, "\n")
 }

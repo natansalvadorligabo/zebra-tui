@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"charm.land/lipgloss/v2"
 	"github.com/salvadorligabo/zebra-tui/internal/diff"
 )
 
@@ -84,13 +85,24 @@ func RenderControlBar(scope, viewMode string, showWhitespace bool, focus focusPa
 	}
 	sep := styleMessage.Render(" │ ")
 	field := func(label, value string, f focusPanel) string {
-		text := label + ": " + value
 		if focus == f {
-			return styleControlActive.Render(" " + text + " ")
+			return styleControlActive.Render(" ") +
+				hotkeyLabel(styleControlActive, label) +
+				styleControlActive.Render(": "+value+" ")
 		}
-		return " " + styleMessage.Render(label+": ") + styleFocused.Render(value) + " "
+		return " " + hotkeyLabel(styleMessage, label) + styleMessage.Render(": ") + styleFocused.Render(value) + " "
 	}
 	return field("scope", scope, focusScope) + sep + field("view", viewMode, focusView) + sep + field("whitespace", ws, focusWhitespace)
+}
+
+// hotkeyLabel renders label with base, underlining its first rune to advertise
+// the single-key shortcut that toggles it (e.g. "scope" -> s̲cope, bound to "s").
+func hotkeyLabel(base lipgloss.Style, label string) string {
+	r := []rune(label)
+	if len(r) == 0 {
+		return ""
+	}
+	return base.Underline(true).Render(string(r[0])) + base.Render(string(r[1:]))
 }
 
 // RenderFooter renders the keybinding hint line.
