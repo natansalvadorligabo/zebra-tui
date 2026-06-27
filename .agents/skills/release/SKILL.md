@@ -1,0 +1,71 @@
+---
+name: release
+description: >
+  Preflight a zebra release and hand the maintainer the exact push/publish
+  commands. Use when the user wants to cut a release, ship a version, tag a
+  version (e.g. v0.0.1), or publish to GitHub Releases or npm.
+---
+
+# Release
+
+Getting a tag to the repo and out through the pipeline. The agent does the
+**preflight** — proving the branch is releasable and the asset wiring is
+correct — then the **handoff**: the maintainer pushes and publishes, because
+this repo's rule is **never push** (see AGENTS.md). GoReleaser and the Deploy
+workflow do the actual publishing; the agent never tags-and-pushes.
+
+The canonical maintainer runbook is [`docs/RELEASING.md`](../../../docs/RELEASING.md) —
+this skill is the agent's preflight, not a second copy of it.
+
+## Steps
+
+### 1. Confirm the target version
+
+Establish `vX.Y.Z` with the user (first release: `v0.0.1`). Releases are cut
+from `main`; work must already be merged or ready to merge from `dev`.
+
+**Completion criterion:** an explicit `vX.Y.Z` string agreed with the user.
+
+### 2. Preflight the branch
+
+On the release branch:
+
+```sh
+go vet ./... && go test ./... && go build ./...
+git status --short
+```
+
+Also confirm the module path matches the GitHub repo (`go.mod` and imports use
+the same org as `git remote -v`) — a mismatch breaks `go install`.
+
+**Completion criterion:** vet/tests/build exit 0, working tree clean, module
+path matches the remote.
+
+### 3. Verify the release wiring is consistent
+
+The npm postinstall builds its download URL from the GoReleaser asset names, so
+the two must agree:
+
+- `.goreleaser.yaml` `archives.name_template` produces `zebra-<os>-<arch>` raw
+  binaries (`formats: [binary]`).
+- `npm/install.js`'s `OS`/`ARCH` maps yield those same names.
+- `goreleaser check` passes. If `goreleaser` is installed, also dry-run and
+  inspect the output names:
+
+  ```sh
+  goreleaser check
+  goreleaser release --snapshot --clean && ls dist/
+  ```
+
+**Completion criterion:** every `dist/` binary name is reproducible from
+`npm/install.js`, and `goreleaser check` exits 0.
+
+### 4. Hand off — do not push
+
+Present the maintainer the command sequence from `docs/RELEASING.md`: merge
+`dev`→`main`, `git tag` + `git push` the tag (triggers Release), publish the
+draft Release, then run the Deploy workflow for npm. Flag any one-time setup
+still missing (the `NPM_TOKEN` GitHub secret).
+
+**Completion criterion:** the maintainer has the exact push/tag/publish commands
+and the list of any unmet prerequisites. The agent has pushed nothing.
