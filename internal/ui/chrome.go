@@ -53,10 +53,10 @@ func sidebarRow(f diff.File) string {
 	status := statusBadge(f.Status)
 	counts := ""
 	if f.Added > 0 {
-		counts += " " + fmt.Sprintf("+%d", f.Added)
+		counts += " " + styleStatusA.Render(fmt.Sprintf("+%d", f.Added))
 	}
 	if f.Removed > 0 {
-		counts += " " + fmt.Sprintf("-%d", f.Removed)
+		counts += " " + styleStatusD.Render(fmt.Sprintf("-%d", f.Removed))
 	}
 	return fmt.Sprintf("%s %s%s", status, f.Path, counts)
 }
@@ -75,13 +75,22 @@ func statusBadge(s diff.Status) string {
 }
 
 // RenderControlBar renders the persistent top bar showing current scope, view
-// mode, and whitespace toggle.
-func RenderControlBar(scope, viewMode string, showWhitespace bool) string {
+// mode, and whitespace toggle. The field matching focus is highlighted so the
+// active Tab target is obvious.
+func RenderControlBar(scope, viewMode string, showWhitespace bool, focus focusPanel) string {
 	ws := "off"
 	if showWhitespace {
 		ws = "on"
 	}
-	return fmt.Sprintf(" scope: %s │ view: %s │ whitespace: %s ", scope, viewMode, ws)
+	sep := styleMessage.Render(" │ ")
+	field := func(label, value string, f focusPanel) string {
+		text := label + ": " + value
+		if focus == f {
+			return styleControlActive.Render(" " + text + " ")
+		}
+		return " " + styleMessage.Render(label+": ") + styleFocused.Render(value) + " "
+	}
+	return field("scope", scope, focusScope) + sep + field("view", viewMode, focusView) + sep + field("whitespace", ws, focusWhitespace)
 }
 
 // RenderFooter renders the keybinding hint line.

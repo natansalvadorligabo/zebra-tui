@@ -218,7 +218,7 @@ func TestRenderSidebar_Filter(t *testing.T) {
 }
 
 func TestRenderControlBar_ShowsState(t *testing.T) {
-	out := RenderControlBar("staged", "side-by-side", true)
+	out := RenderControlBar("staged", "side-by-side", true, focusScope)
 	for _, want := range []string{"staged", "side-by-side"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("control bar missing %q:\n%s", want, out)

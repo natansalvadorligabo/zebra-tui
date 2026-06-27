@@ -21,18 +21,18 @@ func (m Model) content() string {
 		return styleMessage.Render("error: " + m.loadErr.Error())
 	}
 
-	control := RenderControlBar(m.scope.String(), m.view.String(), m.showWhitespace)
-	sidebar := RenderSidebar(m.files, m.selected, m.filter, m.focus == focusSidebar)
-	diffPanel := m.renderDiffPanel()
+	title := RenderTitleBar(m.width)
+	control := RenderControlBar(m.scope.String(), m.view.String(), m.showWhitespace, m.focus)
 
-	body := lipgloss.JoinHorizontal(
-		lipgloss.Top,
-		lipgloss.NewStyle().Width(sidebarWidth).Render(sidebar),
-		" ",
-		diffPanel,
-	)
+	h := m.diffHeight()
+	sidebar := padLinesTo(RenderSidebar(m.files, m.selected, m.filter, m.focus == focusSidebar), h)
+	diff := padLinesTo(m.renderDiffPanel(), h)
+	sidebarBox := panelStyle(m.focus == focusSidebar).Width(sidebarWidth).Render(sidebar)
+	diffBox := panelStyle(m.focus == focusDiff).Width(m.diffWidth()).Render(diff)
 
-	parts := []string{control, body}
+	body := lipgloss.JoinHorizontal(lipgloss.Top, sidebarBox, diffBox)
+
+	parts := []string{title, control, body}
 	if m.searchActive {
 		parts = append(parts, styleFocused.Render("search: "+m.search))
 	}
@@ -44,7 +44,7 @@ func (m Model) content() string {
 func (m Model) renderDiffPanel() string {
 	files := m.filteredFiles()
 	if len(files) == 0 {
-		return RenderEmptyMessage()
+		return RenderSplash(m.diffWidth(), m.diffHeight())
 	}
 	idx := m.opened
 	if idx < 0 || idx >= len(files) {
@@ -70,20 +70,46 @@ func (m Model) renderFile(f diff.File, opts RenderOpts) string {
 }
 
 func (m Model) diffWidth() int {
-	w := m.width - sidebarWidth - 1
+	// Both panels carry a 2-column border, so the body consumes
+	// sidebarWidth + diffWidth + 4 horizontal cells.
+	w := m.width - sidebarWidth - 4
 	if w < 20 {
 		w = 20
 	}
 	return w
 }
 
+// chromeRows counts the non-body lines: title bar, control bar, footer, and the
+// optional search line.
+func (m Model) chromeRows() int {
+	rows := 3
+	if m.searchActive {
+		rows++
+	}
+	return rows
+}
+
+// diffHeight is the inner content height shared by both bordered panels. The
+// border adds the two surrounding rows on top of this.
 func (m Model) diffHeight() int {
-	// Reserve rows for control bar and footer.
-	h := m.height - 3
+	h := m.height - m.chromeRows() - 2 // 2 for the panel border's top/bottom
 	if h < 1 {
 		h = 1
 	}
 	return h
+}
+
+// padLinesTo trims s to n lines, padding with blank lines so the bordered panel
+// always frames exactly n rows and both panels stay the same height.
+func padLinesTo(s string, n int) string {
+	lines := strings.Split(s, "\n")
+	if len(lines) > n {
+		lines = lines[:n]
+	}
+	for len(lines) < n {
+		lines = append(lines, "")
+	}
+	return strings.Join(lines, "\n")
 }
 
 // scrollLines returns at most height lines of s starting at offset.
