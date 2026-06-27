@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -12,9 +13,24 @@ import (
 	"github.com/natansalvadorligabo/zebra-tui/internal/ui"
 )
 
+// version is the build version, overridden at release time via
+// -ldflags "-X main.version=...". It defaults to "dev" for local builds.
+var version = "dev"
+
+// writeVersion prints the program version to w.
+func writeVersion(w io.Writer) {
+	fmt.Fprintf(w, "zebra %s\n", version)
+}
+
 func main() {
 	repoFlag := flag.String("repo", ".", "path to the git repository")
+	versionFlag := flag.Bool("version", false, "print version and exit")
 	flag.Parse()
+
+	if *versionFlag {
+		writeVersion(os.Stdout)
+		return
+	}
 
 	if err := run(*repoFlag); err != nil {
 		fmt.Fprintln(os.Stderr, "zebra:", err)

@@ -1,9 +1,23 @@
 package main
 
 import (
+	"bytes"
 	"path/filepath"
+	"strings"
 	"testing"
 )
+
+func TestWriteVersion_DefaultsToDev(t *testing.T) {
+	var buf bytes.Buffer
+	writeVersion(&buf)
+	got := buf.String()
+	if !strings.HasPrefix(got, "zebra ") {
+		t.Errorf("writeVersion output = %q, want it to start with %q", got, "zebra ")
+	}
+	if !strings.Contains(got, "dev") {
+		t.Errorf("writeVersion output = %q, want it to contain default version %q", got, "dev")
+	}
+}
 
 func TestResolveRepo_Default(t *testing.T) {
 	got, err := resolveRepo(".")
