@@ -19,9 +19,11 @@ There is no Makefile or lint config; use the standard `go` toolchain. Go 1.26.
 ## Git workflow
 
 **Always check the current branch before committing.** Run `git branch
---show-current` (or `git status`) and confirm you are on the intended branch —
-feature work lands on `dev`, never directly on `main`. The branch can change
-between turns, so verify every time rather than assuming.
+--show-current` and, if you are not on the intended branch, `git switch` to it
+*before* staging — do not just print the branch and commit anyway. Feature work
+lands on `dev`, never directly on `main`. The branch can change between turns
+(the maintainer pushes and checks out branches), so guard every commit rather
+than assuming.
 
 **Never `git push`.** Only the maintainer pushes. Agents may stage, commit, and
 create branches locally, but pushing to any remote is off-limits — leave pushing
